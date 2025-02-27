@@ -36,13 +36,12 @@ jobs:
           TAGS=${TAGS%,} # Remove trailing comma
           echo "IMAGE_TAGS=$TAGS" >> $GITHUB_ENV   
           echo "Building image with tags: $TAGS"
-    #  -
-    #    name: Build and push
-    #    uses: docker/build-push-action@v6
-    #    with:
-    #      context: ./galalem/${{ github.event.inputs.container }}
-    #      tags: ${{ env.IMAGE_TAGS }}
-    #      push: true
-    #      provenance: true
-    #      sbom: true
-    
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./galalem/${{ github.event.inputs.container }}
+          tags: ${{ env.IMAGE_TAGS }}
+          push: true
+          provenance: true
+          sbom: true
