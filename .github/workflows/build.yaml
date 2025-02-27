@@ -1,0 +1,48 @@
+name: Build & Push Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      container:
+        type: choice
+        required: true
+        description: What image you want to build?
+        options: 
+        - laravel
+        - nginx
+      tags:
+        required: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Set up Image Tags
+        run: |
+          TAGS=$(echo "${{ github.event.inputs.tags }}" | awk -v prefix="galalem/${{ github.event.inputs.container }}:" 'BEGIN {RS=","; ORS=","} {print prefix $1}')
+          TAGS=${TAGS%,} # Remove trailing comma
+          echo "IMAGE_TAGS=$TAGS" >> $GITHUB_ENV   
+          echo "Building image with tags: $TAGS"
+    #  -
+    #    name: Build and push
+    #    uses: docker/build-push-action@v6
+    #    with:
+    #      context: ./galalem/${{ github.event.inputs.container }}
+    #      tags: ${{ env.IMAGE_TAGS }}
+    #      push: true
+    #      provenance: true
+    #      sbom: true
+    
