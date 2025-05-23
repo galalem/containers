@@ -32,7 +32,7 @@ jobs:
         uses: docker/metadata-action@v5.7.0
         with:
           images: galalem/${{ github.event.inputs.container }}
-          tags: ${{ join(fromJson('["' + replace('type=raw,value=' + replace(github.event.inputs.tags, ',', ',type=raw,value='), ',', '","') + '"]'), '\n') }}
+          tags: ${{ join(fromJson(format('["{0}"]', replace(format('type=raw,value={0}', github.event.inputs.tags), ',', '","type=raw,value='))), '\n') }}
       -
         name: Build and push
         uses: docker/build-push-action@v6
