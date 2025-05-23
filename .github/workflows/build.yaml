@@ -27,12 +27,28 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - 
+        name: Format Docker tags for metadata-action
+        id: format
+        run: |
+          TAGS="${{ github.event.inputs.tags }}"
+          IFS=',' read -ra TAG_ARRAY <<< "$TAGS"
+      
+          FORMATTED_TAGS=""
+          for tag in "${TAG_ARRAY[@]}"; do
+            FORMATTED_TAGS+="type=raw,value=${tag}"$'\n'
+          done
+      
+          FORMATTED_TAGS="${FORMATTED_TAGS%$'\n'}"
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          echo "$FORMATTED_TAGS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - 
         name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5.7.0
         with:
           images: galalem/${{ github.event.inputs.container }}
-          tags: ${{ join(fromJson(format('["{0}"]', replace(format('type=raw,value={0}', github.event.inputs.tags), ',', '","type=raw,value='))), '\n') }}
+          tags: ${{ steps.format.outputs.tags }}
       -
         name: Build and push
         uses: docker/build-push-action@v6
