@@ -1,0 +1,15 @@
+{
+  "8.4": {
+    "variants": ["fpm", "fpm-alpine"],
+    "default_variant": "fpm",
+    "latest": true
+  },
+  "8.3": {
+    "variants": ["fpm", "fpm-alpine"],
+    "default_variant": "fpm"
+  },
+  "8.2": {
+    "variants": ["fpm", "fpm-alpine"],
+    "default_variant": "fpm"
+  }
+}

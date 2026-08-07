@@ -1,0 +1,7 @@
+{
+  "1.27": {
+    "variants": ["alpine"],
+    "default_variant": "alpine",
+    "latest": true
+  }
+}
