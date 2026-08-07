@@ -9,10 +9,10 @@ RUN apk add --no-cache \
     libpng-dev \
     oniguruma-dev \
     libxml2-dev \
-    libpq-dev \
+    postgresql-dev \
     libzip-dev
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip opcache
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN chown -R www-data:www-data /var/www
 
 COPY shared/default.conf /etc/nginx/http.d/default.conf
@@ -22,9 +22,6 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 WORKDIR /var/www
 
 EXPOSE 80 443
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -fsS http://127.0.0.1/ >/dev/null || exit 1
 
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
