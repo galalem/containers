@@ -21,7 +21,7 @@ RUN cat <<EOF > /etc/crontabs/root
 EOF
 
 # Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
+COPY 1.27/alpine/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Expose Nginx port
