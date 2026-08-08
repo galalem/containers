@@ -1,17 +1,29 @@
 FROM php:8.4-fpm-alpine
 
+# Runtime libraries — these must persist.
 RUN apk add --no-cache \
     nginx \
     tini \
     git \
     curl \
     unzip \
-    libpng-dev \
-    oniguruma-dev \
-    libxml2-dev \
-    postgresql-dev \
-    libzip-dev
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip opcache
+    libpng \
+    oniguruma \
+    libxml2 \
+    libpq \
+    libzip
+
+# Build-time toolchain and headers, dropped once the extensions are compiled.
+RUN apk add --no-cache --virtual .build-deps \
+      $PHPIZE_DEPS \
+      libpng-dev \
+      oniguruma-dev \
+      libxml2-dev \
+      libpq-dev \
+      libzip-dev \
+ && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip opcache \
+ && apk del --no-network .build-deps
+
 RUN sed -i \
       -e 's|^;catch_workers_output = .*|catch_workers_output = yes|' \
       -e 's|^;decorate_workers_output = .*|decorate_workers_output = no|' \
