@@ -12,6 +12,10 @@ RUN apk add --no-cache \
     postgresql-dev \
     libzip-dev
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip opcache
+RUN sed -i \
+      -e 's|^;catch_workers_output = .*|catch_workers_output = yes|' \
+      -e 's|^;decorate_workers_output = .*|decorate_workers_output = no|' \
+      /usr/local/etc/php-fpm.d/www.conf
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN chown -R www-data:www-data /var/www
 
