@@ -28,6 +28,10 @@ RUN sed -i \
       -e 's|^;catch_workers_output = .*|catch_workers_output = yes|' \
       -e 's|^;decorate_workers_output = .*|decorate_workers_output = no|' \
       /usr/local/etc/php-fpm.d/www.conf
+# Refuse to build on a base image without the PHP2Shell fixes (CVE-2026-109618/109619).
+RUN php -r 'exit(version_compare(PHP_VERSION, "8.2.35", ">=") ? 0 : 1);' \
+ || { echo "PHP $(php -r 'echo PHP_VERSION;') is older than 8.2.35; base image is stale" >&2; exit 1; }
+COPY shared/security.ini /usr/local/etc/php/conf.d/zz-security.ini
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN chown -R www-data:www-data /var/www
 
